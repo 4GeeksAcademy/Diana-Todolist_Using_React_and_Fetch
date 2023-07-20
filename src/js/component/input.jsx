@@ -1,21 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
 
 const Input = () => {
   const [task, setTask] = useState("");
   const [taskList, setTaskList] = useState([]);
+
+  useEffect(() => {
+    fetch("https://fake-todo-list-52f9a4ed80ce.herokuapp.com/todos/user/Viridian-a")
+      .then((response) => response.json())
+      .then((data) => setTaskList(data))
+      .catch((error) => console.error("Error fetching tasks:", error));
+  }, []);
+
   
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       if (task) {
-        setTaskList((prevTaskList) => [...prevTaskList, { task: task, showIcon: false }
-        ]);
+        const newTask = {
+          done: false,
+          id: Math.floor(Math.random() * 1000),
+          label: task,
+        };
+        setTaskList((prevTaskList) => [...prevTaskList, newTask]);
         setTask("");
       } else {
-        alert("The fill is empty!");
+        alert("The field is empty!");
       }
     }
   };
@@ -32,7 +43,7 @@ const Input = () => {
         return prevTaskList.map((item, i) =>
           i === index ? { ...item, showIcon: true } : item
         );
-      };
+      }
       return prevTaskList;
     });
   };
@@ -48,38 +59,46 @@ const Input = () => {
     });
   };
 
+  const handlePrintTasks = () => {
+    console.log(taskList);
+  };
 
   return (
     <>
-      <input id="inputField"
+      <input
+        id="inputField"
         type="text"
         value={task}
         placeholder="Add your task"
-        onChange={(e) => setTask(e.target.value)} onKeyDown={handleKeyDown} />
+        onChange={(e) => setTask(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
 
-      <ul
-        className="list__container" >
-          <hr className="custom-hr" />
+      <ul className="list__container">
+        <hr className="custom-hr" />
         {taskList.map((item, index) => (
-
-            <li
+          <li
             className="task"
-            key={index}
+            key={item.id}
             onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}>
-
-            {item.task}{" "}
+            onMouseLeave={() => handleMouseLeave(index)}
+          >
+            {item.label}{" "}
             {item.showIcon && (
-              <i className="icono"><FontAwesomeIcon
-                icon={faTimes}
-                onClick={() => handleErase(index)}
-              /></i>
+              <i className="icono">
+                <FontAwesomeIcon
+                  icon={faTimes}
+                  onClick={() => handleErase(index)}
+                />
+              </i>
             )}
           </li>
-
         ))}
       </ul>
       <p className="items__counter">{taskList.length} task left</p>
+      <button className="btn btn-warning" onClick={handlePrintTasks}>
+        Print Tasks
+      </button>
     </>
   );
 };
