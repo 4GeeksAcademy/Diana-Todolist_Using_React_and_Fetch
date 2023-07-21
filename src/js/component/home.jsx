@@ -4,7 +4,7 @@ import Task from "./task.jsx";
 
 const Home = () => {
 	const [tasks, setTasks] = useState([])
-	const [inputText, setInputText] = useState("");
+	const [text, setText] = useState("");
 	const Api = 'https://fake-todo-list-52f9a4ed80ce.herokuapp.com/todos/user/Viridian-a'
 
 	useEffect(() => {
@@ -18,7 +18,7 @@ const Home = () => {
 
 
 	const updateAllTasks = () => {
-		const newTask = { done: false, id: Date.now(), label: inputText };
+		const newTask = { done: false, id: Date.now(), label: text };
 
 		fetch(Api, {
 			method: 'PUT',
@@ -29,12 +29,12 @@ const Home = () => {
 		}).catch(err => err);
 
 		setTasks([...tasks, newTask]);
-		setInputText('');
+		setText('');
 	}
 
 	const handleKeyDown = (e) => {
 		if (e.key === "Enter") {
-			if (inputText.trim() !== '') {
+			if (text.trim() !== '') {
 				updateAllTasks()
 			}
 		}
@@ -65,12 +65,12 @@ const Home = () => {
 
 	return (
 		<div className="general__container">
-			<h1 className="text-center mt-5">Todos</h1>
+			<h1 className="text-center mt-5 pe-5">To do's</h1>
 			<ul className="list__container">
 				<li className="task">
 					<input type="text" 
 					id="inputField"
-					 value={inputText} placeholder="What needs to be done?" onKeyDown={handleKeyDown} onChange={(e) => { setInputText(e.target.value) }} />
+					 value={text} placeholder="Add your next task" onKeyDown={handleKeyDown} onChange={(e) => { setText(e.target.value) }} />
 				</li>
 				{/* Render every input that gets inserted */}
 				{tasks.map((task, index) => {
@@ -80,8 +80,10 @@ const Home = () => {
 						</li>
 					);
 				})}
-				<li className="items__counter">{tasks.length} Items left</li>
-				<button onClick={() => { deleteAllTask() }}>DELETE ALL</button>
+				<li className="items__counter">{tasks.length} items left</li>
+				<div className="d-flex justify-content-center">				
+					<button className="btn btn-dark" onClick={() => { deleteAllTask() }}>Delete all tasks</button>
+				</div>
 			</ul>
 
 		</div>
